@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hit the Mark</title>
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f6f6f4;--ink:#141414;--grey:#6d6d6d;--ginv:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#121212;--ink:#f2f2f0;--grey:#a0a0a0;--ginv:invert(1)}}
+:root[data-theme="dark"]{--paper:#121212;--ink:#f2f2f0;--grey:#a0a0a0;--ginv:invert(1)}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;background:var(--paper);color:var(--ink);font-family:"Special Elite","Courier New",monospace;font-size:17px;display:flex;justify-content:center}
+.wob{filter:url(#boil)}
+.grain{position:fixed;left:-50%;top:-50%;width:200%;height:200%;pointer-events:none;z-index:50;opacity:.16;filter:var(--ginv);
+background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.5 -.25'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");animation:jit .6s steps(1) infinite}
+@keyframes jit{0%{transform:translate(0,0)}20%{transform:translate(-4%,3%)}40%{transform:translate(3%,-5%)}60%{transform:translate(-2%,-3%)}80%{transform:translate(5%,4%)}}
+.vig{position:fixed;inset:0;pointer-events:none;z-index:49;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.28))}
+main{width:100%;max-width:520px;padding:70px 16px 30px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.card{background:var(--paper);border:3px solid var(--ink);border-radius:6px 14px 8px 12px;box-shadow:5px 5px 0 var(--ink)}
+.sign{padding:10px 22px 12px;text-align:center;outline:2px solid var(--ink);outline-offset:-9px}
+h1{font:400 clamp(26px,8vw,38px) "Permanent Marker",Impact,sans-serif;margin:0;letter-spacing:.04em}
+.sub{margin:4px 0 0;font-size:16px}
+#play{width:100%;display:flex;flex-direction:column;align-items:center;gap:14px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}
+.plank{padding:6px 26px;text-align:center;min-width:230px}
+.time{font:400 clamp(32px,10vw,46px) "Permanent Marker",Impact,sans-serif;line-height:1.2;padding:0 8px}
+.time.over{background:var(--ink);color:var(--paper)}
+.time.hidden{filter:blur(10px)}
+.state{font-size:16px;color:var(--grey)}
+.dial{position:relative;width:min(78vw,320px);aspect-ratio:1;perspective:900px}
+.flip{position:absolute;inset:0;transform-style:preserve-3d}
+.front,.back{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.back{transform:rotateX(180deg);display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--paper);border:4px solid var(--ink);outline:2px solid var(--ink);outline-offset:-14px}
+.back span{font:400 clamp(34px,11vw,54px) "Permanent Marker",Impact,sans-serif;text-align:center}
+.spin .flip{animation:spin 2.2s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes spin{from{transform:rotateX(0)}to{transform:rotateX(1620deg)}}
+.dial svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.ink{stroke:var(--ink)}.fp{fill:var(--paper)}.fi{fill:var(--ink)}
+.ring{transform:rotate(-90deg)}
+.track{fill:none;stroke:var(--ink);stroke-opacity:.22;stroke-width:6}
+.bar{fill:none;stroke:var(--ink);stroke-width:6;stroke-linecap:round;stroke-dasharray:703.7;stroke-dashoffset:703.7}
+.bar.over{stroke:var(--grey)}
+.blind .ring{opacity:0}
+.hole{transform-box:fill-box;transform-origin:center;animation:pop .16s ease-out}
+@keyframes pop{from{transform:scale(2.2);opacity:0}to{transform:none;opacity:1}}
+.cap{margin:-4px 0 0;font-size:15px;color:var(--grey);text-align:center}
+.result{padding:10px 18px;text-align:center;width:100%}
+.result:empty{display:none}
+.verdict{font:400 26px "Permanent Marker",Impact,sans-serif;margin:0 0 4px}
+.verdict.bad{font-style:italic;text-decoration:underline dashed;text-underline-offset:5px}
+.result p{margin:2px 0}
+.menubtn{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:12px;z-index:70;width:46px;height:46px;padding:0;font-size:22px;line-height:1}
+.panel{position:fixed;top:calc(68px + env(safe-area-inset-top,0px));right:12px;width:min(88vw,330px);z-index:70;padding:14px 16px;display:flex;flex-direction:column;align-items:stretch;gap:12px}
+.panel[hidden]{display:none}
+.panel .step{justify-content:space-between}
+.panel label{display:flex;align-items:center;gap:8px}
+.step{display:flex;align-items:center;gap:6px}
+button,input{font:inherit;color:inherit}
+button{background:var(--paper);border:2px solid var(--ink);border-radius:6px;padding:2px 12px;cursor:pointer}
+button:hover{background:var(--ink);color:var(--paper)}
+button:focus-visible,input:focus-visible,.dial:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+input[type=number]{width:72px;background:var(--paper);border:2px solid var(--ink);border-radius:6px;padding:3px;text-align:center}
+input[type=checkbox]{accent-color:var(--ink);width:18px;height:18px}
+.best{width:100%;color:var(--grey)}
+.balloon{position:fixed;left:50%;top:0;width:150px;margin-left:-75px;pointer-events:none;z-index:60;animation:fall 3s cubic-bezier(.3,.1,.6,1) forwards}
+.balloon[hidden]{display:none}
+.balloon svg{width:100%;height:auto;display:block}
+.bd{fill:var(--paper);stroke:var(--ink);stroke-width:3}
+@keyframes fall{0%{transform:translateY(-140px) rotate(-12deg)}60%{transform:translateY(60vh) rotate(8deg)}100%{transform:translateY(110vh) rotate(-6deg)}}
+.stick{display:block;width:min(66vw,260px);align-self:flex-start;margin-top:-72px;position:relative;z-index:2;overflow:visible}
+.arms{transform-origin:70px 76px}
+.recoil .arms{animation:kick .3s ease-out}
+@keyframes kick{0%{transform:rotate(-9deg) translate(-4px,3px)}100%{transform:none}}
+button,#play,.dial{touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-user-select:none}
+input[type=number]{font-size:16px}
+.dial,.flip{-webkit-transform-style:preserve-3d}
+@supports (-webkit-touch-callout:none){.wob{filter:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}.recoil .arms{animation:none}.grain{animation:none}.balloon{animation:none;top:35%}.hole{animation:none}.spin .flip{animation:none;transform:rotateX(180deg)}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="boil" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence id="turb" type="fractalNoise" baseFrequency=".03" numOctaves="2" seed="1"/><feDisplacementMap in="SourceGraphic" scale="3.5"/></filter></svg>
+<div class="grain" aria-hidden="true"></div><div class="vig" aria-hidden="true"></div>
+<main>
+
+  <div id="play">
+    <div class="plank card wob"><div class="time" id="time">0.000</div><div class="state" id="state">Ready</div></div>
+    <div class="dial wob" id="dial" tabindex="0" role="button" aria-label="Start or stop the timer">
+      <div class="flip"><div class="front">
+      <svg viewBox="0 0 260 260" aria-hidden="true">
+        <defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" class="ink" stroke-width="2"/></pattern></defs>
+        <circle cx="130" cy="130" r="124" class="fp ink" stroke-width="4"/>
+        <circle cx="132" cy="128" r="121" fill="none" class="ink" stroke-width="1.5"/>
+        <circle cx="130" cy="130" r="104" class="fp ink" stroke-width="2.5"/>
+        <circle cx="130" cy="130" r="84" fill="url(#hatch)" class="ink" stroke-width="2.5"/>
+        <circle cx="130" cy="130" r="64" class="fp ink" stroke-width="2.5"/>
+        <circle cx="130" cy="130" r="44" class="fi ink" stroke-width="2.5"/>
+        <circle cx="130" cy="130" r="24" class="fp ink" stroke-width="2.5"/>
+        <circle cx="130" cy="130" r="9" class="fi"/>
+        <g id="holes"></g>
+      </svg>
+      <svg class="ring" viewBox="0 0 260 260" aria-hidden="true">
+        <circle class="track" cx="130" cy="130" r="112"/>
+        <circle class="bar" id="bar" cx="130" cy="130" r="112"/>
+        <line x1="238" y1="130" x2="258" y2="130" class="ink" stroke-width="5"/>
+      </svg>
+      </div>
+      <div class="back" aria-hidden="true"><span>Perfect!</span></div></div>
+    </div>
+    <svg class="stick wob" id="stick" viewBox="0 0 300 160" role="img" aria-label="A stick figure aiming a pistol at the target">
+      <g fill="none" class="ink" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="70" cy="46" r="16" class="fp"/>
+        <circle cx="78" cy="44" r="2" class="fi" stroke-width="1"/>
+        <path d="M70 62 L70 108 M70 108 L52 148 M70 108 L90 148 M52 148 L40 148 M90 148 L102 148"/>
+        <path d="M70 74 L46 98"/>
+        <g class="arms">
+          <path d="M70 74 L112 56 M70 80 L106 64"/>
+          <path d="M112 56 L144 42" stroke-width="8"/>
+          <path d="M114 58 L108 72"/>
+          <g id="flash" style="opacity:0"><path d="M150 38 L170 20 M152 43 L178 43 M150 48 L170 66" stroke-width="3.5"/><text x="180" y="36" font-family="Permanent Marker,Impact,sans-serif" font-size="22" class="fi" stroke="none">BANG!</text></g>
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <div class="result card wob" id="result" aria-live="polite"></div>
+
+  <button class="menubtn card" id="menubtn" aria-label="Menu" aria-expanded="false" aria-controls="menu">☰</button>
+  <div class="panel card" id="menu" hidden>
+    <div class="step">
+      <label for="target">Target (s)</label>
+      <button id="minus" aria-label="Decrease target">−</button>
+      <input id="target" type="number" min="1" max="120" step="1" value="1">
+      <button id="plus" aria-label="Increase target">+</button>
+    </div>
+    <label><input type="checkbox" id="blind"> Hide the clock while running</label>
+    <div class="best" id="best"></div>
+  </div>
+</main>
+
+<div class="balloon" id="balloon" hidden>
+  <svg viewBox="0 0 140 100" role="img" aria-label="A balloon dog falling">
+    <g class="bd">
+      <ellipse cx="46" cy="72" rx="7" ry="17"/><ellipse cx="62" cy="74" rx="7" ry="15"/>
+      <ellipse cx="86" cy="74" rx="7" ry="15"/><ellipse cx="100" cy="72" rx="7" ry="17"/>
+      <ellipse cx="28" cy="40" rx="12" ry="6" transform="rotate(-25 28 40)"/>
+      <ellipse cx="68" cy="50" rx="36" ry="14"/><ellipse cx="106" cy="32" rx="14" ry="11"/>
+      <ellipse cx="124" cy="36" rx="11" ry="7"/><circle cx="100" cy="19" r="6"/>
+    </g>
+    <path d="M52 44 C58 41 66 41 72 44" fill="none" class="ink" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="108" cy="29" r="2" class="fi"/>
+  </svg>
+</div>
+
+<script>
+(function(){
+  var bar=document.getElementById('bar'), timeEl=document.getElementById('time'),
+      stateEl=document.getElementById('state'), resultEl=document.getElementById('result'),
+      targetEl=document.getElementById('target'), blindEl=document.getElementById('blind'),
+      bestEl=document.getElementById('best'), balloonEl=document.getElementById('balloon'),
+      holes=document.getElementById('holes'), dialEl=document.getElementById('dial'), play=document.getElementById('play'),
+      turb=document.getElementById('turb'), menu=document.getElementById('menu'), mb=document.getElementById('menubtn'), stick=document.getElementById('stick'), flash=document.getElementById('flash'),
+      balloonTimer=0, C=2*Math.PI*112, running=false, t0=0, raf=0, seed=1;
+
+  if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches)){
+    setInterval(function(){ seed=seed%9+1; turb.setAttribute('seed',seed); },130);
+  }
+
+  function target(){ var v=parseFloat(targetEl.value); return (v>0&&isFinite(v))?Math.min(v,120):1; }
+  function fmt(s){ return s.toFixed(3); }
+  function bestKey(){ return 'best-'+target(); }
+  function loadBest(){
+    var b=null; try{ b=localStorage.getItem(bestKey()); }catch(e){}
+    bestEl.textContent = b!==null ? 'Closest at '+target()+'s: '+(+b).toFixed(3)+'s off' : 'No record for '+target()+'s yet';
+  }
+  function saveBest(diff){
+    try{ var b=localStorage.getItem(bestKey()); if(b===null||diff<parseFloat(b)) localStorage.setItem(bestKey(),String(diff)); }catch(e){}
+    loadBest();
+  }
+  function draw(e){
+    var tg=target();
+    bar.style.strokeDashoffset=C*(1-Math.min(e/tg,1));
+    bar.classList.toggle('over',e>tg);
+    timeEl.classList.toggle('over',e>tg&&!(running&&blindEl.checked));
+    timeEl.textContent=fmt(e);
+  }
+  function tick(){ draw((performance.now()-t0)/1000); raf=requestAnimationFrame(tick); }
+
+  function start(){
+    running=true; resultEl.innerHTML=''; holes.innerHTML=''; dialEl.classList.remove('spin');
+    balloonEl.hidden=true; clearTimeout(balloonTimer);
+    stateEl.textContent='Tap or press space to stop';
+    play.classList.toggle('blind',blindEl.checked);
+    timeEl.classList.toggle('hidden',blindEl.checked);
+    t0=performance.now(); tick();
+  }
+
+  function mark(d){
+    var a=Math.abs(d), r=a<0.0005?0:Math.min(a/0.4,1.12)*104,
+        ang=(d<0?Math.PI:0)+(Math.random()-.5)*1.4,
+        x=130+r*Math.cos(ang), y=130+r*Math.sin(ang),
+        i,t,rr,pts=[],cr='';
+    for(i=0;i<10;i++){ t=i*Math.PI/5; rr=(i%2?6.5:11)+Math.random()*2; pts.push((x+rr*Math.cos(t)).toFixed(1)+','+(y+rr*Math.sin(t)).toFixed(1)); }
+    for(i=0;i<4;i++){ t=Math.random()*6.283; rr=16+Math.random()*6; cr+='M'+(x+10*Math.cos(t)).toFixed(1)+' '+(y+10*Math.sin(t)).toFixed(1)+'L'+(x+rr*Math.cos(t)).toFixed(1)+' '+(y+rr*Math.sin(t)).toFixed(1); }
+    holes.innerHTML='<g class="hole"><path d="'+cr+'" fill="none" class="ink" stroke-width="2" stroke-linecap="round"/><polygon points="'+pts.join(' ')+'" class="fp ink" stroke-width="2"/><circle cx="'+x+'" cy="'+y+'" r="4.5" class="fi"/></g>';
+  }
+
+  function fire(){
+    stick.classList.remove('recoil'); void stick.getBoundingClientRect(); stick.classList.add('recoil');
+    flash.style.opacity=1; setTimeout(function(){ flash.style.opacity=0; },180);
+  }
+
+  function stop(){
+    var e=(performance.now()-t0)/1000, tg=target();
+    running=false; cancelAnimationFrame(raf);
+    play.classList.remove('blind'); timeEl.classList.remove('hidden'); draw(e);
+    stateEl.textContent='Tap or press space to retry';
+    var d=e-tg, a=Math.abs(d), ms=Math.round(a*1000), v, cls='';
+    if(ms===0) v='Perfect';
+    else if(ms<=1) v='You couldn\'t be closer';
+    else if(ms<=400) v='Almost';
+    else if(a<1){ v='Drifting'; cls='bad'; }
+    else { v='Off course'; cls='bad'; }
+    resultEl.innerHTML='<p class="verdict '+cls+'">'+v+'</p>'+
+      '<p>You stopped at '+fmt(e)+'s, '+a.toFixed(3)+'s '+(d<0?'early':d>0?'late':'exactly on time')+'.</p>';
+    mark(d); fire(); saveBest(a);
+    if(ms===0){
+      dialEl.classList.remove('spin'); void dialEl.offsetWidth; dialEl.classList.add('spin');
+      balloonEl.hidden=true; void balloonEl.offsetWidth; balloonEl.hidden=false;
+      balloonTimer=setTimeout(function(){ balloonEl.hidden=true; },3200);
+    }
+  }
+
+  function setMenu(o){ menu.hidden=!o; mb.setAttribute('aria-expanded',o?'true':'false'); mb.textContent=o?'✕':'☰'; }
+  mb.addEventListener('click',function(){ setMenu(menu.hidden); mb.blur(); });
+
+  function toggle(){ running?stop():start(); }
+
+  document.addEventListener('keydown',function(ev){
+    if(ev.key==='Escape'){ setMenu(false); if(document.activeElement) document.activeElement.blur(); return; }
+    if(ev.code!=='Space'||ev.repeat||!menu.hidden) return;
+    var el=document.activeElement;
+    if(el&&el.tagName==='INPUT'&&el.type==='number') return;
+    ev.preventDefault(); toggle();
+  });
+  play.addEventListener('click',toggle);
+
+  function reset(){ draw(0); stateEl.textContent='Tap or press space'; resultEl.innerHTML=''; holes.innerHTML=''; dialEl.classList.remove('spin'); loadBest(); }
+  function setTarget(v){ if(running) return; targetEl.value=Math.max(1,Math.min(120,v)); reset(); }
+  document.getElementById('minus').addEventListener('click',function(){ setTarget(target()-1); });
+  document.getElementById('plus').addEventListener('click',function(){ setTarget(target()+1); });
+  targetEl.addEventListener('change',function(){ setTarget(target()); });
+  ['minus','plus'].forEach(function(id){
+    document.getElementById(id).addEventListener('keydown',function(ev){ if(ev.code==='Space') ev.stopPropagation(); });
+  });
+  reset();
+})();
+</script>
+</body>
+</html>
